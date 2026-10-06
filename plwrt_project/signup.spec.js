@@ -1,16 +1,16 @@
 import {test, expect} from '@playwright/test';
 import { faker } from '@faker-js/faker';
 
-export const fakerFirst = faker.person.firstName('male');
-export const fakerLast = faker.person.lastName('male');
+const fakerFirst = faker.person.firstName('male');
+const fakerLast = faker.person.lastName('male');
 
-export const uniqueEmail = faker.internet.email({
+const uniqueEmail = faker.internet.email({
     firstName: fakerFirst,
     lastName: fakerLast,
     provider: 'gmail.com'
 }).toLowerCase();
 
-export const fakerPassword = faker.internet.password({
+const fakerPassword = faker.internet.password({
     length: 8,
 });
 
@@ -18,8 +18,6 @@ test('registration', async ({page}) => {
     await page.goto('/login');
 
     // ===== faker data  =====
-
-    //uniqueEmail, fakerFirst, fakerLast, fakerPassword variables moved outside of the test(...) for further import in login.spec.js
 
     const fakerCompany = faker.company.name();
     const fakerAddress1 = faker.location.streetAddress({useFullAddress: true});
@@ -137,3 +135,33 @@ test('registration', async ({page}) => {
     expect(sessionId).toBeDefined();
 
 });
+
+// test('log in', async ({page}) => {
+//     await page.goto('/login');
+//
+//     // 1 Log in page
+//
+//     const loginEmail = page.locator('[data-qa="login-email"]');
+//     const loginPassword = page.locator('[data-qa="login-password"]');
+//     const loginBtn = page.locator('[data-qa="login-button"]');
+//     const loggedState = page.getByRole('link', {name: 'Logout'});
+//     let cookies;
+//     let sessionId;
+//
+//     // Log in action
+//
+//     await expect(loginEmail).toBeEmpty();
+//     await loginEmail.fill(uniqueEmail);
+//
+//     await expect(loginPassword).toBeEmpty();
+//     await loginPassword.fill(fakerPassword);
+//
+//     await loginBtn.click();
+//
+//     await expect(loggedState).toHaveAttribute('href', '/logout');
+//
+//     cookies = await page.context().cookies();
+//     sessionId = cookies.find(c => c.name === 'sessionid')?.value;
+//     expect(sessionId).toBeDefined();
+//
+// });
