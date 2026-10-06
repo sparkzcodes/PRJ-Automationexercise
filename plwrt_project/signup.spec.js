@@ -1,22 +1,26 @@
 import {test, expect} from '@playwright/test';
 import { faker } from '@faker-js/faker';
-import fs from 'fs';
+
+export const fakerFirst = faker.person.firstName('male');
+export const fakerLast = faker.person.lastName('male');
+
+export const uniqueEmail = faker.internet.email({
+    firstName: fakerFirst,
+    lastName: fakerLast,
+    provider: 'gmail.com'
+}).toLowerCase();
+
+export const fakerPassword = faker.internet.password({
+    length: 8,
+});
 
 test('registration', async ({page}) => {
     await page.goto('/login');
 
     // ===== faker data  =====
-    const fakerFirst = faker.person.firstName('male');
-    const fakerLast = faker.person.lastName('male');
-    const uniqueEmail = faker.internet.email({
-        firstName: fakerFirst,
-        lastName: fakerLast,
-        provider: 'gmail.com'
-    }).toLowerCase();
 
-    const fakerPassword = faker.internet.password({
-        length: 8,
-    });
+    //uniqueEmail, fakerFirst, fakerLast, fakerPassword variables moved outside of the test(...) for further import in login.spec.js
+
     const fakerCompany = faker.company.name();
     const fakerAddress1 = faker.location.streetAddress({useFullAddress: true});
     const fakerState = faker.location.state({abbreviated: false});
@@ -55,6 +59,12 @@ test('registration', async ({page}) => {
     const zip = page.locator('[data-qa="zipcode"]');
     const phone = page.locator('[data-qa="mobile_number"]');
     const registerBtn = page.locator('[data-qa="create-account"]');
+    const successReg = page.locator('[data-qa="account-created"]');
+    const successRegText = page.getByText('Congratulations! Your new account has been successfully created!')
+    const continueReg = page.locator('[data-qa="continue-button"]');
+    const loggedState = page.getByRole('link', {name: 'Logout'});
+    let cookies;
+    let sessionId;
 
     // ===== 1 page =====
     await regName.fill(fakerFirst);
@@ -110,5 +120,20 @@ test('registration', async ({page}) => {
     await expect(phone).toHaveValue(fakerPhone);
 
     await registerBtn.click();
+
+    await expect(successReg).toBeVisible();
+    await expect(successRegText).toBeVisible();
+    await expect(continueReg).toBeVisible();
+    await expect(continueReg).toBeEnabled();
+
+    await continueReg.click();
+
+    await expect(page).toHaveURL('/');
+
+    await expect(loggedState).toHaveAttribute('href', '/logout');
+
+    cookies = await page.context().cookies();
+    sessionId = cookies.find(c => c.name === 'sessionid')?.value;
+    expect(sessionId).toBeDefined();
 
 });
