@@ -9,6 +9,6 @@ test('Open and check page', async ({page}) => {
 
     await page.waitForLoadState();
 
-//Open the page & Verify it displayed
+    //Open the page & Verify it displayed
     await expect(openState).toBeVisible();
 });
