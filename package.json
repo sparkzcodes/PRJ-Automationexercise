@@ -4,14 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run-test": "npx playwright test auth --headed"
+    "test": "playwright test --project=chromium",
+    "test:headed": "playwright test --project=chromium --headed",
+    "run-test": "playwright test --project=chromium --headed",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
-    "@playwright/test": "^1.58.1"
+    "@playwright/test": "^1.58.1",
+    "@types/node": "^26.6.4",
+    "typescript": "^7.0.2"
   }
 }
